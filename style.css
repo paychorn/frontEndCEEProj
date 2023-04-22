@@ -1,0 +1,35 @@
+html, body {
+  font-family: 'IBM Plex Sans Thai', sans-serif;
+  line-height: 1.5rem;
+  background: #010103;
+  color: #E6EAF0;
+  overflow: hidden;
+  margin: 0;
+}
+#nav-bar {
+  display: flex;
+  flex-direction: column;
+  float: left;
+  overflow: scroll;
+  gap: 0.5rem;
+  padding: 2rem;
+  background: #060609;
+  border-right: 2px solid #22252d;
+  width: 30vw;
+  height: 100vh;
+}
+.icon-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.nav-content {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  max-height: 2rem;
+  max-width: 30vw;
+}
+.secondary-text {
+  color: #747883;
+}
