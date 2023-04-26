@@ -58,6 +58,7 @@ a:visited {
   color: var(--primary);
   border: 2px solid var(--primary);
   border-radius: 4px;
+  cursor: pointer;
 }
 
 .body {
@@ -71,6 +72,7 @@ a:visited {
 
 .nav-content {
   min-height: 2.5rem;
+  cursor: pointer;
 }
 
 .user-info {
@@ -115,14 +117,15 @@ a:visited {
 }
 
 #nav-bar {
+  --pad: 1.5rem;
   display: flex;
   flex-direction: column;
   float: left;
   overflow-y: scroll;
-  height: 100%;
+  height: calc(100% - 2 * var(--pad));
   max-height: 100%;
+  padding: var(--pad);
   justify-content: space-between;
-  padding: 1rem;
   background: var(--navbar-background);
   border-right: 1px solid #30363d;
   min-width: 25%;
@@ -170,6 +173,7 @@ h1 {
   border: none;
   outline: none;
   font-size: 1.25rem;
+  cursor: pointer;
 }
 
 .tri {

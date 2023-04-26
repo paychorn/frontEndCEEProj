@@ -9,34 +9,39 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" type="text/css" href="/css/style.css">
 
-  <script src="/js/script.js" defer></script>
   <script src="/js/script-mcv.js" defer></script>
+  <script src="/js/script.js" defer></script>
 
   <title>Document</title>
 </head>
 <body>
+
 <!--Navbar-->
 <div id="nav-bar">
   <div id="nav-container">
+
     <div class="nav-content">
-        <span class="content-container">
-          <a href="" class="icon-container">
-            <img src="/assets/icon-today.svg" alt="Today Icon">
-            <span class="body" style="padding-top: 4px;">Today</span>
-          </a>
-          <span class="body" style="padding-top: 4px;">4</span>
-        </span>
+      <div class="content-container">
+        <div class="icon-container">
+          <img src="/assets/icon-today.svg" alt="Today Icon">
+          <span class="body" style="padding-top: 4px;">Today</span>
+        </div>
+        <span class="body" style="padding-top: 4px;">4</span>
+      </div>
     </div>
+
     <div class="nav-content">
       <div class="content-container">
         <div class="icon-container">
           <img src="/assets/icon-upcoming.svg" alt="Upcoming Icon">
-          <div class="body" style="padding-top: 4px;">Upcoming</div>
+          <span class="body" style="padding-top: 4px;">Upcoming</span>
         </div>
         <div class="body" style="color: #747883;padding-top: 4px;">4</div>
       </div>
     </div>
+
     <br/>
+
     <div class="nav-content">
       <div class="content-container">
         <div class="updated-container">
@@ -45,6 +50,7 @@
         </div>
       </div>
     </div>
+
     <div class="nav-content">
       <div class="content-container">
         <div class="updated-container">
@@ -54,134 +60,14 @@
     </div>
   </div>
 
-  <div id="user-container">
-    <div class="user-info">
-      <div class="body">Sudyod Khengmak</div>
-      <div class="body">6430000021</div>
-    </div>
-    <button class="button">Log out</button>
-  </div>
+  <div id="user-container"></div>
 </div>
 
 <!--Main-->
 <div id="main">
-  <h1 id="header">Computer Engineering Essentials</h1>
-  <div class="content">
-    <button type="button" class="collapsible center active icon-container">
-      <img src="/assets/icon-arrow.svg" alt="Expand/Collapse" class="tri">
-      Assigned
-    </button>
-
-    <div class="assignments">
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-    </div>
-
-    <button type="button" class="collapsible center active icon-container">
-      <img src="/assets/icon-arrow.svg  " alt="Expand/Collapse" class="tri">
-      Missing
-    </button>
-
-    <div class="assignments">
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-    </div>
-
-    <button type="button" class="collapsible center active icon-container">
-      <img src="/assets/icon-arrow.svg" alt="Expand/Collapse" class="tri">
-      Done
-    </button>
-
-    <div class="assignments">
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <div class="body assignment-title">Activity 12: Selfie Attendance
-          CheckingCheckingCheckingCheckingCheckingCheckingChecking
-          CheckingCheckingCheckingCheckingCheckingCheckingCheckingCheckingChecking
-        </div>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body assignment-title">Activity 12: Selfie Attendance Checking</span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-      <div class="assignment">
-        <button class="assignment-state">
-          <img src="/assets/icon-uncheck.svg" alt="unchecked">
-        </button>
-        <span class="body assignment-title">Activity 12: Selfie Attendance Checking </span>
-        <span class="body">•</span>
-        <span class="body">Due in 10 minutes</span>
-      </div>
-    </div>
-  </div>
+  <h1 id="header">Todo la title here la</h1>
+  <div class="content" id="main-content"></div>
 </div>
+
 </body>
 </html>
