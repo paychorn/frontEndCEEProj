@@ -20,7 +20,7 @@
 }
 
 .assignments {
-  padding: 0.5rem 0rem 0.5rem 1.5rem;
+  padding: 0.5rem 0 0.5rem 1.5rem;
   display: block;
   overflow: hidden;
 }
@@ -37,6 +37,7 @@
   border: none;
   margin: 0;
   padding: 0;
+  cursor: pointer;
 }
 
 .assignment-title {
@@ -70,4 +71,16 @@
   border: none;
   outline: none;
   cursor: pointer;
+}
+
+.due-near {
+  color: indianred;
+}
+
+.due-upcoming {
+  color: dodgerblue;
+}
+
+.due-late {
+  color: sandybrown;
 }
