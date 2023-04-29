@@ -8,6 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" type="text/css" href="/css/style.css">
+  <link rel="stylesheet" type="text/css" href="/css/style-nav.css">
+  <link rel="stylesheet" type="text/css" href="/css/style-main.css">
 
   <script src="/js/script-mcv.js" defer></script>
   <script src="/js/script.js" defer></script>
@@ -20,43 +22,27 @@
 <div id="nav-bar">
   <div id="nav-container">
 
-    <div class="nav-content">
-      <div class="content-container">
-        <div class="icon-container">
-          <img src="/assets/icon-today.svg" alt="Today Icon">
-          <span class="body" style="padding-top: 4px;">Today</span>
-        </div>
-        <span class="body" style="padding-top: 4px;">4</span>
+    <div class="nav-content fill-container">
+      <div class="icon-container">
+        <img src="/assets/icon-today.svg" alt="Today Icon">
+        <span class="body" style="padding-top: 4px;">Today</span>
       </div>
+      <span class="body" style="padding-top: 4px;">4</span>
     </div>
 
-    <div class="nav-content">
-      <div class="content-container">
-        <div class="icon-container">
-          <img src="/assets/icon-upcoming.svg" alt="Upcoming Icon">
-          <span class="body" style="padding-top: 4px;">Upcoming</span>
-        </div>
-        <div class="body" style="color: #747883;padding-top: 4px;">4</div>
+    <div class="nav-content fill-container">
+      <div class="icon-container">
+        <img src="/assets/icon-upcoming.svg" alt="Upcoming Icon">
+        <span class="body" style="padding-top: 4px;">Upcoming</span>
       </div>
+      <div class="body secondary-text" style="padding-top: 4px;">4</div>
     </div>
 
     <br/>
 
-    <div class="nav-content">
-      <div class="content-container">
-        <div class="updated-container">
-          <img src="/assets/new-item.svg" alt="Circle">
-          <span class="body">Computer Engineering Essentials</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="nav-content">
-      <div class="content-container">
-        <div class="updated-container">
-          <span class="body" style="padding-left: 8px;">Computer Engineering Essentials</span>
-        </div>
-      </div>
+    <div class="nav-content" id="courseList">
+      <span class="space-8-px"><img src="/assets/new-item.svg" alt="Circle"></span>
+      <span class="body">Computer Engineering Essentials</span>
     </div>
   </div>
 

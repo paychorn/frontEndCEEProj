@@ -1,4 +1,5 @@
 let userData = makeUserData();
+let courseList = [];
 let assignmentList = [];
 let isLogin = true;
 const useTest = true;
@@ -6,7 +7,7 @@ const useSecure = false;
 const backendAddress = `http${useSecure ? "s" : ""}://mcv.vt.in.th:3000`;
 
 const samplePayload = {
-  "student_id": "6532155521",
+  "student_id": "6532155821",
   "firstname_en": "Name",
   "lastname_en": "Surname",
   "courses": [
@@ -17,23 +18,28 @@ const samplePayload = {
         {
           "title": "Future Assignment",
           "duetime": 9690195540,
-          "state": 0 // haven't checked
+          "state": 0 // haven't done
         },
         {
           "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1680195540,
-          "state": 0 // haven't checked
+          "state": 0 // haven't done
         },
         {
           "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1680195540,
-          "state": 1 // have checked
+          "state": 1 // have done
+        },
+        {
+          "title": "scala homework (sec1))))))",
+          "duetime": 1682614740,
+          "state": 0
         }
       ]
     },
     {
       "course_no": "2110356",
-      "title": "Embbeded System [Section 1-2 and 33]",
+      "title": "Embbeded Systemmmm [Section 1-2 and 33]",
       "assignments": [
         {
           "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
@@ -43,6 +49,42 @@ const samplePayload = {
         {
           "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1680195540,
+          "state": 1
+        },
+        {
+          "title": "scala homework (sec1)",
+          "duetime": 1682726360,
+          "state": 1
+        },
+        {
+          "title": "scala homework (sec1)",
+          "duetime": 1682726360,
+          "state": 1
+        }
+      ]
+    },
+    {
+      "course_no": "2110356",
+      "title": "Programming Language [Section 1-2 and 33]",
+      "assignments": [
+        {
+          "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
+          "duetime": 1680195540,
+          "state": 0
+        },
+        {
+          "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
+          "duetime": 1682684453,
+          "state": 1
+        },
+        {
+          "title": "scala homework (sec1)",
+          "duetime": 1682726360,
+          "state": 1
+        },
+        {
+          "title": "scala homework",
+          "duetime": 1682812780,
           "state": 1
         }
       ]
@@ -81,16 +123,22 @@ async function main() {
     .then((newInfo) => {
       userData = newInfo
       for (const course of userData.courses) {
+        courseList.push({
+          course_no: course.course_no,
+          course_title: course.title
+        });
         for (const assignment of course.assignments) {
           assignmentList.push({
             course_no: course.course_no,
+            course_title: course.title,
             assignment: assignment
           });
+          
         }
       }
     })
     .then(renderUserInfo)
-    .then(renderAssignments);
+    .then(renderTodayAssignments);
 }
 
 function renderUserInfo() {
@@ -100,7 +148,8 @@ function renderUserInfo() {
 
   if (isLogin) {
     const infoElement = document.createElement("div");
-    infoElement.classList.add("user-info");
+    infoElement.classList.add("column");
+    infoElement.classList.add("margin-y");
 
     const nameElement = document.createElement("div");
     nameElement.classList.add("body");
@@ -128,18 +177,84 @@ function renderUserInfo() {
   }
 }
 
+function renderCourse() {
+  const courseElement = document.getElementById("courseList");
+  courseElement.innerHTML = "";
+  const courseTitle = document.createElement("div");
+  for (const course of courseList) {
+    courseTitle.append(makeSpanElement(course.title));
+  }
+  courseElement.append(courseTitle);
+}
+
+function renderTodayAssignments() {
+  const contentElement = document.getElementById("main-content");
+  contentElement.innerHTML = "";
+  const t_now = Date.now() / 1000;
+  const sectionCourse = document.createElement("div");
+  assignmentforToday = false;
+
+  for (const course of userData.courses) {
+    const courseElement = makeCollapsibleElement(course.title, "h2");
+    for (const assignment of course.assignments) {
+      const t_due = assignment.duetime;
+      const dt = t_due - t_now;
+      const a_title = `${assignment.title}`
+      const checked = assignment.state;
+      
+      if (dt > 0 && dt < 86400) {
+        assignmentforToday = true;
+        courseElement[1].append(makeAssignmentElement(a_title, dt));
+        sectionCourse.append(courseElement[0], courseElement[1]);
+      }
+    }
+  }
+  if (assignmentforToday) { contentElement.append(sectionCourse); }
+  else {
+    contentElement.append(
+      makeDivElement("There's no more assignment for today."), 
+      makeDivElement("Great Job!")
+    );
+    contentElement.setAttribute("class", "margin-space secondary-text");
+  }
+}
+
+function renderUpcomingAssignments() {
+  const contentElement = document.getElementById("main-content");
+  contentElement.innerHTML = "";
+  const t_now = Date.now() / 1000;
+  const sectionCourse = document.createElement("div");
+
+  for (const course of userData.courses) {
+    const courseElement = makeCollapsibleElement(course.title, "h2");
+    for (const assignment of course.assignments) {
+      const t_due = assignment.duetime;
+      const dt = t_due - t_now;
+      const a_title = `${assignment.title}`
+      const checked = assignment.state;
+      
+      if (dt > 0 && dt < 604800) {
+        courseElement[1].append(makeAssignmentElement(a_title, dt));
+        sectionCourse.append(courseElement[0]);
+      }
+    }
+    sectionCourse.append(courseElement[1]);
+  }
+  contentElement.append(sectionCourse);
+}
+
 function renderAssignments() {
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
-  const sectionAssigned = makeCollapsibleElement("Assigned");
-  const sectionMissing = makeCollapsibleElement("Missing");
-  const sectionDone = makeCollapsibleElement("Done");
+  const sectionAssigned = makeCollapsibleElement("Assigned", "h2");
+  const sectionMissing = makeCollapsibleElement("Missing", "h2");
+  const sectionDone = makeCollapsibleElement("Done", "h2");
 
   const t_now = Date.now() / 1000;
-  for (const {course_no, assignment} of assignmentList) {
+  for (const {assignment} of assignmentList) {
     const t_due = assignment.duetime;
     const dt = t_due - t_now;
-    const a_title = `[${course_no}] ${assignment.title}`
+    const a_title = `${assignment.title}`
     const checked = assignment.state;
 
     if (dt > 0) {
@@ -156,16 +271,19 @@ function renderAssignments() {
   contentElement.append(sectionDone[0], sectionDone[1]);
 }
 
-function makeCollapsibleElement(name) {
+function makeCollapsibleElement(name, font) {
   const btnElement = document.createElement("button");
   btnElement.setAttribute("class", "collapsible center active icon-container");
 
   const imgArrow = document.createElement("img");
   imgArrow.setAttribute("src", "/assets/icon-arrow.svg");
   imgArrow.setAttribute("alt", "Expand/Collapse");
-  imgArrow.setAttribute("class", "tri");
+  imgArrow.setAttribute("class", "cheveron");
 
-  btnElement.append(imgArrow, document.createTextNode(name));
+  const content = document.createElement("span");
+  content.textContent = name
+  content.setAttribute("class", font)
+  btnElement.append(imgArrow, content);
   btnElement.addEventListener("click", collapsibleListener);
 
   const assignmentsElement = document.createElement("div");
@@ -203,11 +321,18 @@ function makeSpanElement(text) {
   return element;
 }
 
+function makeDivElement(text) {
+  const element = document.createElement("div");
+  element.setAttribute("class", "body center");
+  element.textContent = text;
+  return element;
+}
+
 function makeDueText(dt) {
   if (dt > 0) {
     return `Due in ${secondsToHoursMinutes(dt)}`
   } else {
-    return `Past due (for ${secondsToHoursMinutes(-dt)})`
+    return `Past due for ${secondsToHoursMinutes(-dt)}`
   }
 }
 
