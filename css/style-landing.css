@@ -1,0 +1,83 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@100;200;300;400;500;600;700&display=swap");
+
+:root {
+  --primary: #E6EAF0;
+  --secondary: #A3ABC1;
+  --background: #5A5AD4;
+  --btn-background: #0d1117;
+  --navbar-background: #0d1117;
+  --header-background: #13181f;
+  --selected-background: #23262C;
+  --font-default: 'IBM Plex Sans Thai';
+}
+
+html, body {
+  font-family: var(--font-default), sans-serif;
+  color: var(--primary);
+  background: var(--background);
+  font-size: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10vw;
+  overflow-y: hidden;
+  height: 100%;
+  margin: 0;
+  text-align: center;
+}
+
+#content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  height: 100%;
+  justify-content: center;
+}
+h1 {
+  font-size: 6rem;
+  line-height: 5rem;
+  margin: 0rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+p {
+  color: var(--secondary);
+  margin: 0rem;
+}
+button {
+  font-size: 1rem;
+  font-family: var(--font-default), sans-serif;
+  color: var(--primary);
+  align-self: center;
+  width: fit-content;
+  padding: 0.5rem 1.5rem;
+  background-color: var(--background);
+  border: 2px solid var(--primary);
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+img {
+  margin: 0;
+}
+
+@media screen and (max-width: 900px) {
+  html, body {
+    padding: 2vw;
+  }
+  h1 {
+    font-size: 4rem;
+    line-height: 4rem;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  html, body {
+    padding: 4vw;
+  }
+  h1 {
+    font-size: 3rem;
+    line-height: 3rem;
+  }
+}
