@@ -7,7 +7,7 @@ const Page = {
   MAIN: 1
 };
 
-let pageState = Page.MAIN;
+let pageState = Page.LOGIN;
 let userData = makeUserData();
 let courseList = [];
 let assignmentList = [];
@@ -110,13 +110,52 @@ async function main() {
 
 function renderMainPage() {
   document.body.innerHTML = "";
+  const allLinks = document.head.getElementsByTagName("link");
+  for (const link of allLinks)
+    if (link.rel === "stylesheet")
+      document.head.removeChild(link);
 
   switch (pageState) {
     case Page.LOGIN: {
+      const stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.type = "text/css";
+      stylesheet.href = "/css/style-landing.css";
+      document.head.append(stylesheet);
+
+      document.body.innerHTML = `
+      <div id="content">
+        <h1>Mee Duay Ror ?</h1>
+        <p>Organize your chula life and become more focused with Mee Duay Ror, <br/>
+        The Comp Eng Ess project group #12 task manager and to-do list app. </p>
+        <button id="btn-start">Get Started</button>
+      </div>
+      <img src="/assets/landing.png" alt="background">
+      `
+
+      document.getElementById("btn-start").addEventListener("click", loginBtnListener);
       break;
     }
     case Page.MAIN:
     default: {
+      let stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.type = "text/css";
+      stylesheet.href = "/css/style.css";
+      document.head.append(stylesheet);
+
+      stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.type = "text/css";
+      stylesheet.href = "/css/style-main.css";
+      document.head.append(stylesheet);
+
+      stylesheet = document.createElement("link");
+      stylesheet.rel = "stylesheet";
+      stylesheet.type = "text/css";
+      stylesheet.href = "/css/style-nav.css";
+      document.head.append(stylesheet);
+
       const navBar = document.createElement("div");
       navBar.id = "nav-bar";
 
@@ -203,6 +242,7 @@ function renderUserInfo() {
     btnLogout.classList.add("button");
     btnLogout.id = "btn-logout";
     btnLogout.innerText = "Log out"
+    btnLogout.addEventListener("click", logoutBtnListener);
 
     infoElement.append(nameElement, idElement);
     userContainer.append(infoElement, btnLogout);
@@ -211,7 +251,7 @@ function renderUserInfo() {
     btnLogin.classList.add("button");
     btnLogin.id = "btn-login";
     btnLogin.innerText = "Log in"
-    btnLogin.addEventListener("click", authApp);
+    btnLogin.addEventListener("click", loginBtnListener);
 
     userContainer.appendChild(btnLogin);
   }
@@ -478,6 +518,20 @@ function checkboxListener() {
     imgElement.setAttribute("alt", "unchecked");
     imgElement.setAttribute("status", "false");
   }
+}
+
+function loginBtnListener() {
+  // todo: Login Authentication
+  // For now: just go to the main page.
+  pageState = Page.MAIN;
+  renderMainPage();
+}
+
+function logoutBtnListener() {
+  // todo: Logout Authentication
+  // For now: just go to the login page.
+  pageState = Page.LOGIN;
+  renderMainPage();
 }
 
 function makeSpanElement(text) {
