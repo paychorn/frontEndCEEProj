@@ -1,7 +1,7 @@
 const appName = "MCV Companion";
-const useTest = true;
+const useTest = false;
 const useSecure = false;
-const backendAddress = 'http://localhost:3000'
+const backendAddress = 'localhost:3000'
 // const backendAddress = `http${useSecure ? "s" : ""}://mcv.vt.in.th:3000`;
 const MyPage = {
   LOGIN: 0,
@@ -13,11 +13,11 @@ const MyTab = {
   UPCOMING: 2
 };
 
-let pageState = MyPage.MAIN;
+let pageState = MyPage.LOGIN;
 let tabState = 0;
 let userData = makeUserData();
 let assignmentList = [];
-let isLogin = true;
+let isLogin = false;
 let cntAll = 0;
 let cntToday = 0;
 let cntUpcoming = 0;
@@ -75,26 +75,31 @@ const samplePayload = {
   ]
 };
 
-
 const authApp = function () {
-  window.location.href = `${window.location.protocol}//${window.location.hostname}:3000/courseville/auth`
+  window.location.href = `http://${backendAddress}/courseville/auth_app`
 };
 
 const getUserTodo = async function () {
   if (useTest) return samplePayload;
 
   const requestInit = {
-    credentials: "include",
-    method: "GET"
+    method: "GET",
+    credentials: "include"
   };
 
-  await fetch(`${backendAddress}/api/get/todo`, requestInit)
-    .then((response) => response.json())
-    .then((data) => {
-      return data;
+  let data;
+
+  await fetch(
+    `http://${backendAddress}/courseville/get_info`,
+    requestInit
+  )
+    .then((response) => {
+      data = response.json();
     })
     .catch((error) => console.error(error));
 
+  console.log(data);
+  return data;
 };
 
 const postUserTodo = async function () {
@@ -102,31 +107,40 @@ const postUserTodo = async function () {
 };
 
 async function main() {
-  await getUserTodo()
-    .then((newInfo) => {
-      userData = newInfo
+  const urlParams = new URLSearchParams(window.location.search);
+  isLogin = urlParams.get("status") === "ok";
 
-      userData.courses.forEach((course) => {
-        course.assignments.sort((a, b) => a.duetime - b.duetime);
-      });
+  if (!isLogin) {
+    console.log("Login first!");
+    pageState = MyPage.LOGIN;
+    renderMainPage();
+  } else {
+    console.log("Logged in!");
+    pageState = MyPage.MAIN;
 
-      for (const course of userData.courses) {
-        for (const assignment of course.assignments) {
-          assignmentList.push({
-            course_no: course.course_no,
-            course_title: course.title,
-            assignment: assignment
-          });
-        }
+    const newInfo = await getUserTodo();
+    console.log(newInfo);
+    userData = newInfo
+    userData.courses.forEach((course) => {
+      course.assignments.sort((a, b) => a.duetime - b.duetime);
+    });
+
+    for (const course of userData.courses) {
+      for (const assignment of course.assignments) {
+        assignmentList.push({
+          course_no: course.course_no,
+          course_title: course.title,
+          assignment: assignment
+        });
       }
+    }
 
-      assignmentList.sort((a, b) => a.assignment.duetime - b.assignment.duetime);
-    })
-    .then(() => {
-      document.title = `${appName} App`
-    })
-    .then(renderMainPage);
-  // .then(renderTodayAssignments);
+    assignmentList.sort((a, b) => a.assignment.duetime - b.assignment.duetime);
+
+    document.title = `${appName} App`
+    renderMainPage();
+    // .then(renderTodayAssignments);
+  }
 }
 
 function renderMainPage() {
@@ -228,7 +242,6 @@ function renderMainPage() {
       mainContainer.id = "main";
       mainContainer.innerHTML = `
       <span id="header">
-        <img id="nav-icon" src="/assets/icon-menubar.svg">
         <h1 id="header-text">All</h1>
       </span>
       <div class="content" id="main-content"></div>
@@ -671,12 +684,7 @@ function checkboxBtnListener() {
 
 function loginBtnListener() {
   playClickSound();
-
-  // todo: Login Authentication
   authApp();
-  // For now: just go to the main page.
-  pageState = MyPage.MAIN;
-  renderMainPage();
 }
 
 function logoutBtnListener() {
