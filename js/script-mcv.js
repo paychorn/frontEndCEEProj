@@ -689,9 +689,8 @@ function loginBtnListener() {
 
 function logoutBtnListener() {
   playClickSound();
-
-  // todo: Logout Authentication
-   window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname;
+  window.location.href = `http://${backendAddress}/courseville/logout`;
+  // window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname;
 }
 
 function playClickSound() {
