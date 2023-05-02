@@ -1,8 +1,8 @@
 const appName = "MCV Companion";
 const useTest = false;
 const useSecure = false;
-const backendAddress = 'localhost:3000'
-// const backendAddress = `http${useSecure ? "s" : ""}://mcv.vt.in.th:3000`;
+// const backendAddress = 'localhost:3000'
+const backendAddress = `mcv.vt.in.th:3000`;
 const MyPage = {
   LOGIN: 0,
   MAIN: 1
