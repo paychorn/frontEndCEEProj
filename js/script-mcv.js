@@ -483,8 +483,8 @@ function preRenderTodayAssignments() {
         if (checked === 0) ++cntUpcoming;
       }
     }
-    console.log(course.assignments);
-    if (course.assignments.length > 0)
+
+    if (courseElement[1].childNodes.length > 0)
       sectionCourse.append(courseElement[0], courseElement[1]);
   }
 
