@@ -7,11 +7,13 @@ const Page = {
   MAIN: 1
 };
 
-let pageState = Page.LOGIN;
+let pageState = Page.MAIN;
 let userData = makeUserData();
-let courseList = [];
 let assignmentList = [];
 let isLogin = true;
+let cntAll = 0;
+let cntToday = 0;
+let cntUpcoming = 0;
 
 const samplePayload = {
   "student_id": "6430000021",
@@ -31,7 +33,7 @@ const samplePayload = {
         },
         {
           "item_id": 34246,
-          "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
+          "title": "Pitchaya: Assignment 2 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1680195540,
           "state": 1 // have checked
         }
@@ -44,15 +46,21 @@ const samplePayload = {
       "assignments": [
         {
           "item_id": 34247,
-          "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
+          "title": "Pitchayaya: Assignment 3 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1680195540,
           "state": 0
         },
         {
           "item_id": 34248,
-          "title": "Pitchaya: Assignment 1 - Opamp - For Section 2  (Room 4-418)",
+          "title": "Pitchayaya: Assignment 4 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1690195540,
           "state": 1
+        },
+        {
+          "item_id": 34248,
+          "title": "Pitchayaya: Assignment 5 - Opamp - For Section 2  (Room 4-418)",
+          "duetime": 1683022438,
+          "state": 0
         }
       ]
     }
@@ -89,8 +97,7 @@ async function main() {
   await getUserTodo()
     .then((newInfo) => {
       userData = newInfo
-      courseList = userData.courses
-      for (const course of courseList) {
+      for (const course of userData.courses) {
         for (const assignment of course.assignments) {
           assignmentList.push({
             course_no: course.course_no,
@@ -109,11 +116,16 @@ async function main() {
 }
 
 function renderMainPage() {
-  document.body.innerHTML = "";
-  const allLinks = document.head.getElementsByTagName("link");
-  for (const link of allLinks)
-    if (link.rel === "stylesheet")
-      document.head.removeChild(link);
+  document.head.querySelectorAll(`link[rel="stylesheet"]`)
+    .forEach((stylesheet) => {
+      document.head.removeChild(stylesheet);
+    });
+
+  document.body.querySelectorAll("div, img")
+    .forEach((element) => {
+      if (element.parentNode === document.body)
+        document.body.removeChild(element);
+    });
 
   switch (pageState) {
     case Page.LOGIN: {
@@ -123,7 +135,7 @@ function renderMainPage() {
       stylesheet.href = "/css/style-landing.css";
       document.head.append(stylesheet);
 
-      document.body.innerHTML = `
+      document.body.innerHTML += `
       <div id="content">
         <h1>Mee Duay Ror ?</h1>
         <p>Organize your chula life and become more focused with Mee Duay Ror, <br/>
@@ -187,7 +199,7 @@ function renderMainPage() {
           <img src="/assets/icon-upcoming.svg" alt="Upcoming Icon">
           <span class="body" style="padding-top: 4px;">Upcoming</span>
         </div>
-        <div id="count-upcoming" class="body secondary-text" style="padding-top: 4px;">4</div>
+        <span id="count-upcoming" class="body secondary-text" style="padding-top: 4px;">4</span>
       </div>
       
       <br/>
@@ -210,11 +222,26 @@ function renderMainPage() {
       document.getElementById("btn-nav-upcoming").addEventListener("click", navNavListener);
 
       document.getElementById("count-all").innerText = `${assignmentList.length}`;
-      // todo: Count today and upcoming
 
       renderUserInfo();
       renderCourses();
       renderAssignments();
+
+      preRenderTodayAssignments();
+
+      document.getElementById("count-all").textContent = cntAll.toString();
+      document.getElementById("count-today").textContent = cntToday.toString();
+      document.getElementById("count-upcoming").textContent = cntUpcoming.toString();
+
+      if (cntAll === 0) document.getElementById("count-all").className = "body secondary-text";
+      else document.getElementById("count-all").className = "body";
+
+      if (cntToday === 0) document.getElementById("count-today").className = "body secondary-text";
+      else document.getElementById("count-today").className = "body";
+
+      if (cntUpcoming === 0) document.getElementById("count-upcoming").className = "body secondary-text";
+      else document.getElementById("count-upcoming").className = "body";
+
       break;
     }
   }
@@ -261,7 +288,7 @@ function renderCourses() {
   const courseElement = document.getElementById("course-list");
   courseElement.innerHTML = "";
   const courseTitle = document.createElement("div");
-  for (const course of courseList) {
+  for (const course of userData.courses) {
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "nav-content");
     newDiv.setAttribute("cv_cid", course.cv_cid.toString());
@@ -273,7 +300,19 @@ function renderCourses() {
 }
 
 function renderAssignmentsBySubject(cv_cid) {
+  const {appName, contentElement} = preRenderAssignmentsBySubject(cv_cid);
+  document.getElementById("header").textContent = appName;
+  document.getElementById("main-content").innerHTML = "";
+  document.getElementById("main-content").append(...contentElement.childNodes);
+  document.getElementById("main-content").className = contentElement.className;
+}
+
+function preRenderAssignmentsBySubject(cv_cid) {
   let curr_course = undefined;
+  let retVal = {
+    appName: undefined,
+    contentElement: undefined
+  }
   for (const course of userData.courses) {
     if (cv_cid === course.cv_cid.toString()) {
       curr_course = course;
@@ -283,11 +322,11 @@ function renderAssignmentsBySubject(cv_cid) {
 
   if (curr_course === undefined) return;
 
-  document.getElementById("header").textContent = `${appName} - ${curr_course.title}`;
+  retVal.appName = `${appName} - ${curr_course.title}`;
 
-  const contentElement = document.getElementById("main-content");
+  const contentElement = document.createElement("div");
   contentElement.innerHTML = "";
-  contentElement.className = "";
+  contentElement.className = "content";
 
   const sectionAssigned = makeCollapsibleElement("Assigned", "h2");
   const sectionMissing = makeCollapsibleElement("Missing", "h2");
@@ -300,29 +339,53 @@ function renderAssignmentsBySubject(cv_cid) {
     const checked = assignment.state;
 
     if (dt > 0) {
-      sectionAssigned[1].append(makeAssignmentElement(assignment, dt));
-    } else if (checked === 1) {
-      sectionDone[1].append(makeAssignmentElement(assignment, dt));
+      if (checked === 1)
+        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
+      else
+        sectionAssigned[1].append(makeAssignmentElement(assignment, dt, checked));
     } else {
-      sectionMissing[1].append(makeAssignmentElement(assignment, dt));
+      if (checked === 1)
+        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
+      else
+        sectionMissing[1].append(makeAssignmentElement(assignment, dt, checked));
     }
+
   }
 
   contentElement.append(sectionAssigned[0], sectionAssigned[1]);
   contentElement.append(sectionMissing[0], sectionMissing[1]);
   contentElement.append(sectionDone[0], sectionDone[1]);
+
+  retVal.contentElement = contentElement;
+  return retVal;
 }
 
 function renderTodayAssignments() {
-  document.getElementById("header").textContent = `${appName} - Today`;
+  const {appName, contentElement} = preRenderTodayAssignments();
+  document.getElementById("header").textContent = appName;
+  document.getElementById("main-content").innerHTML = "";
+  document.getElementById("main-content").append(...contentElement.childNodes);
+  document.getElementById("main-content").className = contentElement.className;
+}
 
-  const contentElement = document.getElementById("main-content");
+function preRenderTodayAssignments() {
+  let retVal = {
+    appName: undefined,
+    contentElement: undefined
+  }
+
+  retVal.appName = `${appName} - Today`;
+
+  const contentElement = document.createElement("div");
   contentElement.innerHTML = "";
-  contentElement.className = "";
+  contentElement.className = "content";
 
   const t_now = Date.now() / 1000;
   const sectionCourse = document.createElement("div");
   let assignmentForToday = false;
+
+  cntToday = 0;
+  cntUpcoming = 0;
 
   for (const course of userData.courses) {
     const courseElement = makeCollapsibleElement(course.title, "h2");
@@ -333,12 +396,18 @@ function renderTodayAssignments() {
 
       if (0 < dt && dt < 24 * 60 * 60) {
         assignmentForToday = true;
-        courseElement[1].append(makeAssignmentElement(assignment, dt));
+        courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
         sectionCourse.append(courseElement[0]);
+        ++cntToday;
+      } else if (0 < dt) {
+        ++cntUpcoming;
       }
     }
     sectionCourse.append(courseElement[1]);
   }
+
+  cntAll = cntToday + cntUpcoming;
+
   if (assignmentForToday) {
     contentElement.append(sectionCourse);
   } else {
@@ -346,8 +415,12 @@ function renderTodayAssignments() {
       makeCenterDivElement("There's no more assignment for today."),
       makeCenterDivElement("Great Job!")
     );
-    contentElement.setAttribute("class", "margin-space secondary-text");
+    contentElement.classList.add("margin-space")
+    contentElement.classList.add("secondary-text")
   }
+
+  retVal.contentElement = contentElement;
+  return retVal;
 }
 
 function renderUpcomingAssignments() {
@@ -355,7 +428,7 @@ function renderUpcomingAssignments() {
 
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
-  contentElement.className = "";
+  contentElement.className = "content";
 
   const t_now = Date.now() / 1000;
   const sectionCourse = document.createElement("div");
@@ -368,7 +441,7 @@ function renderUpcomingAssignments() {
       const checked = assignment.state;
 
       if (0 < dt) {
-        courseElement[1].append(makeAssignmentElement(assignment, dt));
+        courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
         sectionCourse.append(courseElement[0]);
       }
     }
@@ -382,7 +455,7 @@ function renderAssignments() {
 
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
-  contentElement.className = "";
+  contentElement.className = "content";
 
   const sectionAssigned = makeCollapsibleElement("Assigned", "h2");
   const sectionMissing = makeCollapsibleElement("Missing", "h2");
@@ -395,11 +468,15 @@ function renderAssignments() {
     const checked = assignment.state;
 
     if (dt > 0) {
-      sectionAssigned[1].append(makeAssignmentElement(assignment, dt));
-    } else if (checked === 1) {
-      sectionDone[1].append(makeAssignmentElement(assignment, dt));
+      if (checked === 1)
+        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
+      else
+        sectionAssigned[1].append(makeAssignmentElement(assignment, dt, checked));
     } else {
-      sectionMissing[1].append(makeAssignmentElement(assignment, dt));
+      if (checked === 1)
+        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
+      else
+        sectionMissing[1].append(makeAssignmentElement(assignment, dt, checked));
     }
   }
 
@@ -435,8 +512,7 @@ function makeAssignmentElement(assignment, dt, checked) {
 
   const imgElement = document.createElement("img");
   if (checked > 0) {
-    // todo: Add checked icon
-    imgElement.setAttribute("src", "/assets/icon-arrow.svg");
+    imgElement.setAttribute("src", "/assets/icon-check.svg");
     imgElement.setAttribute("alt", "checked");
     imgElement.setAttribute("status", "true");
   } else {
@@ -449,7 +525,7 @@ function makeAssignmentElement(assignment, dt, checked) {
   btnElement.setAttribute("class", "assignment-state");
   btnElement.id = `btn-cb-${assignment.item_id}`;
   btnElement.append(imgElement);
-  btnElement.addEventListener("click", checkboxListener);
+  btnElement.addEventListener("click", checkboxBtnListener);
 
   assignmentElement.append(btnElement);
 
@@ -470,6 +546,8 @@ function makeAssignmentElement(assignment, dt, checked) {
 }
 
 function collapsibleListener() {
+  playClickSound();
+
   this.classList.toggle("active");
   const content = this.nextElementSibling;
 
@@ -483,11 +561,15 @@ function collapsibleListener() {
 }
 
 function navSubjectListener() {
+  playClickSound();
+
   const cv_cid = this.getAttribute("cv_cid");
   renderAssignmentsBySubject(cv_cid);
 }
 
 function navNavListener() {
+  playClickSound();
+
   switch (this.getAttribute("id")) {
     case "btn-nav-today":
       renderTodayAssignments();
@@ -502,25 +584,47 @@ function navNavListener() {
   }
 }
 
-function checkboxListener() {
-  const item_id = this.id.slice(7);
-  // todo use item id
+function checkboxBtnListener() {
+  playClickSound();
 
   const imgElement = this.getElementsByTagName("img")[0];
+  let currStatus;
 
   if (imgElement.getAttribute("status") === "false") {
-    // todo: Add checked icon
-    imgElement.setAttribute("src", "/assets/icon-arrow.svg");
+    imgElement.setAttribute("src", "/assets/icon-check.svg");
     imgElement.setAttribute("alt", "checked");
     imgElement.setAttribute("status", "true");
+    currStatus = 1;
   } else {
     imgElement.setAttribute("src", "/assets/icon-uncheck.svg");
     imgElement.setAttribute("alt", "unchecked");
     imgElement.setAttribute("status", "false");
+    currStatus = 0;
   }
+
+  // todo logic
+  const item_id = this.id.slice(7);
+
+  for (const assignment of assignmentList) {
+    if (assignment.item_id === item_id) {
+      assignment.state = currStatus;
+    }
+  }
+
+  for (const course of userData.courses) {
+    for (const assignment of course.assignments) {
+      if (assignment.item_id === item_id) {
+        assignment.state = currStatus;
+      }
+    }
+  }
+
+  console.log(assignmentList);
 }
 
 function loginBtnListener() {
+  playClickSound();
+
   // todo: Login Authentication
   // For now: just go to the main page.
   pageState = Page.MAIN;
@@ -528,10 +632,16 @@ function loginBtnListener() {
 }
 
 function logoutBtnListener() {
+  playClickSound();
+
   // todo: Logout Authentication
   // For now: just go to the login page.
   pageState = Page.LOGIN;
   renderMainPage();
+}
+
+function playClickSound() {
+  document.getElementById("audio-click").play();
 }
 
 function makeSpanElement(text) {
