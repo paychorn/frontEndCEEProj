@@ -1,8 +1,8 @@
 const appName = "MCV Companion";
 const useTest = false;
 const useSecure = false;
-// const backendAddress = 'localhost:3000'
-const backendAddress = `mcv.vt.in.th:3000`;
+const backendAddress = 'localhost:3000'
+// const backendAddress = `mcv.vt.in.th:3000`;
 const MyPage = {
   LOGIN: 0,
   MAIN: 1
@@ -122,7 +122,7 @@ async function main() {
     console.log(newInfo);
     userData = newInfo
     userData.courses.forEach((course) => {
-      course.assignments.sort((a, b) => a.duetime - b.duetime);
+      course.assignments.sort((a, b) => a.title.localeCompare(b.title));
     });
 
     for (const course of userData.courses) {
@@ -135,7 +135,7 @@ async function main() {
       }
     }
 
-    assignmentList.sort((a, b) => a.assignment.duetime - b.assignment.duetime);
+    assignmentList.sort((a, b) => a.assignment.title.localeCompare(b.assignment.title));
 
     document.title = `${appName} App`
     renderMainPage();
@@ -691,9 +691,7 @@ function logoutBtnListener() {
   playClickSound();
 
   // todo: Logout Authentication
-  // For now: just go to the login page.
-  pageState = MyPage.LOGIN;
-  renderMainPage();
+   window.location.href = window.location.protocol + '//' + window.location.host + window.location.pathname;
 }
 
 function playClickSound() {
@@ -740,19 +738,24 @@ function makeUserData(student_id = undefined,
   };
 }
 
-function makeCourseData(course_no = undefined,
-                        title = undefined) {
+function makeCourseData(cv_cid = undefined,
+                        course_no = undefined,
+                        title = undefined,
+                        assignments = []) {
   return {
+    "cv_cid": cv_cid,
     "course_no": course_no,
     "title": title,
-    "assignments": []
+    "assignments": assignments
   };
 }
 
-function makeAssignmentData(title = undefined,
+function makeAssignmentData(item_id = undefined,
+                            title = undefined,
                             duetime = undefined,
                             state = 0) {
   return {
+    "item_id": item_id,
     "title": title,
     "duetime": duetime,
     "state": state
