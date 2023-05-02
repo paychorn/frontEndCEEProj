@@ -483,9 +483,9 @@ function preRenderTodayAssignments() {
         if (checked === 0) ++cntUpcoming;
       }
     }
-    sectionCourse.append(courseElement[0], courseElement[1]);
+    if (course.assignments.length > 0)
+      sectionCourse.append(courseElement[0], courseElement[1]);
   }
-
 
   if (assignmentForToday) {
     contentElement.append(sectionCourse);
