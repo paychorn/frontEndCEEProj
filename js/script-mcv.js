@@ -102,8 +102,54 @@ const getUserTodo = async function () {
   return data;
 };
 
-const postUserTodo = async function () {
-// todo: POST to backend
+const postUserTodo = async function (item_id, state) {
+  const itemID = parseInt(item_id);
+  const getInit = {
+    method: "GET",
+    credentials: "include"
+  };
+  const postInit = {
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    method: "POST",
+    credentials: "include",
+    body: ""
+  };
+  await fetch(
+    `http://${backendAddress}/courseville/get`,
+    getInit
+  )
+    .then(response => response.json())
+    .then((dataTable) => {
+      let student_id = userData.student_id;
+      let item_ids = [];
+      for (const student of dataTable) {
+        if (student.student_id === userData.student_id) {
+          student_id = student.student_id;
+          item_ids = student.item_ids;
+          break;
+        }
+      }
+      if (state === 1) {
+        if (!item_ids.includes(itemID)) item_ids.push(itemID);
+      } else {
+        const idx = item_ids.indexOf(itemID);
+        if (idx !== -1) item_ids.splice(idx, 1);
+      }
+      postInit.body = JSON.stringify({
+        student_id: student_id,
+        item_ids: item_ids
+      });
+
+      return fetch(
+        `http://${backendAddress}/courseville/post`,
+        postInit
+      )
+    })
+    .then(() => {
+    })
+    .catch((error) => console.error(error));
 };
 
 async function main() {
@@ -651,6 +697,9 @@ function checkboxBtnListener() {
   }
 
   const item_id = this.id.slice(7);
+
+  postUserTodo(item_id, currStatus).then(() => {
+  });
 
   assignmentList.forEach((assignment) => {
     if (assignment.assignment.item_id.toString() === item_id) {
