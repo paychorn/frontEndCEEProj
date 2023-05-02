@@ -1,19 +1,27 @@
 const appName = "MCV Companion";
 const useTest = true;
 const useSecure = false;
-const backendAddress = `http${useSecure ? "s" : ""}://mcv.vt.in.th:3000`;
-const Page = {
+const backendAddress = 'http://localhost:3000'
+// const backendAddress = `http${useSecure ? "s" : ""}://mcv.vt.in.th:3000`;
+const MyPage = {
   LOGIN: 0,
   MAIN: 1
 };
+const MyTab = {
+  ALL: 0,
+  TODAY: 1,
+  UPCOMING: 2
+};
 
-let pageState = Page.MAIN;
+let pageState = MyPage.MAIN;
+let tabState = 0;
 let userData = makeUserData();
 let assignmentList = [];
 let isLogin = true;
 let cntAll = 0;
 let cntToday = 0;
 let cntUpcoming = 0;
+let navList = []
 
 const samplePayload = {
   "student_id": "6430000021",
@@ -57,10 +65,10 @@ const samplePayload = {
           "state": 1
         },
         {
-          "item_id": 34248,
+          "item_id": 34249,
           "title": "Pitchayaya: Assignment 5 - Opamp - For Section 2  (Room 4-418)",
           "duetime": 1683022438,
-          "state": 0
+          "state": 1
         }
       ]
     }
@@ -69,8 +77,7 @@ const samplePayload = {
 
 
 const authApp = function () {
-  console.log(window.location.hostname);
-  window.location.href = `${window.location.protocol}//${window.location.hostname}:3000/api/auth`
+  window.location.href = `${window.location.protocol}//${window.location.hostname}:3000/courseville/auth`
 };
 
 const getUserTodo = async function () {
@@ -87,16 +94,22 @@ const getUserTodo = async function () {
       return data;
     })
     .catch((error) => console.error(error));
+
 };
 
 const postUserTodo = async function () {
-
+// todo: POST to backend
 };
 
 async function main() {
   await getUserTodo()
     .then((newInfo) => {
       userData = newInfo
+
+      userData.courses.forEach((course) => {
+        course.assignments.sort((a, b) => a.duetime - b.duetime);
+      });
+
       for (const course of userData.courses) {
         for (const assignment of course.assignments) {
           assignmentList.push({
@@ -104,9 +117,10 @@ async function main() {
             course_title: course.title,
             assignment: assignment
           });
-
         }
       }
+
+      assignmentList.sort((a, b) => a.assignment.duetime - b.assignment.duetime);
     })
     .then(() => {
       document.title = `${appName} App`
@@ -128,7 +142,7 @@ function renderMainPage() {
     });
 
   switch (pageState) {
-    case Page.LOGIN: {
+    case MyPage.LOGIN: {
       const stylesheet = document.createElement("link");
       stylesheet.rel = "stylesheet";
       stylesheet.type = "text/css";
@@ -148,7 +162,7 @@ function renderMainPage() {
       document.getElementById("btn-start").addEventListener("click", loginBtnListener);
       break;
     }
-    case Page.MAIN:
+    case MyPage.MAIN:
     default: {
       let stylesheet = document.createElement("link");
       stylesheet.rel = "stylesheet";
@@ -180,7 +194,7 @@ function renderMainPage() {
       navContainer.innerHTML = `
       <div class="nav-content fill-container" id="btn-nav-all">
         <div class="icon-container">
-          <img src="/assets/icon-today.svg" alt="Today Icon">
+          <img src="/assets/icon-all.svg" alt="Today Icon">
           <span class="body" style="padding-top: 4px;">All</span>
         </div>
         <span id="count-all" class="body" style="padding-top: 4px;">4</span>
@@ -204,15 +218,19 @@ function renderMainPage() {
       
       <br/>
       
-      <div class="nav-content" id="course-list"></div>
+      <div id="course-list"></div>
       `
 
       navBar.append(navContainer, userContainer);
+      navList.push(...Array.from(navContainer.children).slice(0, 3));
 
       const mainContainer = document.createElement("div");
       mainContainer.id = "main";
       mainContainer.innerHTML = `
-      <h1 id="header">${appName} - All</h1>
+      <span id="header">
+        <img id="nav-icon" src="/assets/icon-menubar.svg">
+        <h1 id="header-text">All</h1>
+      </span>
       <div class="content" id="main-content"></div>
       `
 
@@ -225,7 +243,7 @@ function renderMainPage() {
 
       renderUserInfo();
       renderCourses();
-      renderAssignments();
+      renderAllAssignments();
 
       preRenderTodayAssignments();
 
@@ -242,6 +260,7 @@ function renderMainPage() {
       if (cntUpcoming === 0) document.getElementById("count-upcoming").className = "body secondary-text";
       else document.getElementById("count-upcoming").className = "body";
 
+      document.getElementById("btn-nav-all").className = "nav-content fill-container nav-active";
       break;
     }
   }
@@ -292,16 +311,18 @@ function renderCourses() {
     const newDiv = document.createElement("div");
     newDiv.setAttribute("class", "nav-content");
     newDiv.setAttribute("cv_cid", course.cv_cid.toString());
-    newDiv.append(makeSpanElement(course.title))
+    newDiv.append(makeSpanElement(course.title));
     newDiv.addEventListener("click", navSubjectListener);
+    navList.push(newDiv);
     courseTitle.append(newDiv);
+    // courseTitle.append(document.createElement("br"));
   }
   courseElement.append(courseTitle);
 }
 
 function renderAssignmentsBySubject(cv_cid) {
   const {appName, contentElement} = preRenderAssignmentsBySubject(cv_cid);
-  document.getElementById("header").textContent = appName;
+  document.getElementById("header-text").textContent = appName;
   document.getElementById("main-content").innerHTML = "";
   document.getElementById("main-content").append(...contentElement.childNodes);
   document.getElementById("main-content").className = contentElement.className;
@@ -338,23 +359,20 @@ function preRenderAssignmentsBySubject(cv_cid) {
     const dt = t_due - t_now;
     const checked = assignment.state;
 
-    if (dt > 0) {
-      if (checked === 1)
-        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
-      else
-        sectionAssigned[1].append(makeAssignmentElement(assignment, dt, checked));
+    if (checked === 1) {
+      sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
     } else {
-      if (checked === 1)
-        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
-      else
-        sectionMissing[1].append(makeAssignmentElement(assignment, dt, checked));
+      if (dt > 0) sectionAssigned[1].append(makeAssignmentElement(assignment, dt, checked));
+      else sectionMissing[1].append(makeAssignmentElement(assignment, dt, checked));
     }
-
   }
 
-  contentElement.append(sectionAssigned[0], sectionAssigned[1]);
-  contentElement.append(sectionMissing[0], sectionMissing[1]);
-  contentElement.append(sectionDone[0], sectionDone[1]);
+  if (sectionAssigned[1].children.length > 0)
+    contentElement.append(sectionAssigned[0], sectionAssigned[1]);
+  if (sectionMissing[1].children.length > 0)
+    contentElement.append(sectionMissing[0], sectionMissing[1]);
+  if (sectionDone[1].children.length > 0)
+    contentElement.append(sectionDone[0], sectionDone[1]);
 
   retVal.contentElement = contentElement;
   return retVal;
@@ -362,7 +380,7 @@ function preRenderAssignmentsBySubject(cv_cid) {
 
 function renderTodayAssignments() {
   const {appName, contentElement} = preRenderTodayAssignments();
-  document.getElementById("header").textContent = appName;
+  document.getElementById("header-text").textContent = appName;
   document.getElementById("main-content").innerHTML = "";
   document.getElementById("main-content").append(...contentElement.childNodes);
   document.getElementById("main-content").className = contentElement.className;
@@ -384,6 +402,7 @@ function preRenderTodayAssignments() {
   const sectionCourse = document.createElement("div");
   let assignmentForToday = false;
 
+  cntAll = 0;
   cntToday = 0;
   cntUpcoming = 0;
 
@@ -394,19 +413,20 @@ function preRenderTodayAssignments() {
       const dt = t_due - t_now;
       const checked = assignment.state;
 
+      ++cntAll;
+
       if (0 < dt && dt < 24 * 60 * 60) {
         assignmentForToday = true;
         courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
         sectionCourse.append(courseElement[0]);
-        ++cntToday;
+        if (checked === 0) ++cntToday;
       } else if (0 < dt) {
-        ++cntUpcoming;
+        if (checked === 0) ++cntUpcoming;
       }
     }
     sectionCourse.append(courseElement[1]);
   }
 
-  cntAll = cntToday + cntUpcoming;
 
   if (assignmentForToday) {
     contentElement.append(sectionCourse);
@@ -424,7 +444,7 @@ function preRenderTodayAssignments() {
 }
 
 function renderUpcomingAssignments() {
-  document.getElementById("header").textContent = `${appName} - Upcoming`;
+  document.getElementById("header-text").textContent = `${appName} - Upcoming`;
 
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
@@ -450,39 +470,27 @@ function renderUpcomingAssignments() {
   contentElement.append(sectionCourse);
 }
 
-function renderAssignments() {
-  document.getElementById("header").textContent = `${appName} - All`;
-
+function renderAllAssignments() {
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
   contentElement.className = "content";
 
-  const sectionAssigned = makeCollapsibleElement("Assigned", "h2");
-  const sectionMissing = makeCollapsibleElement("Missing", "h2");
-  const sectionDone = makeCollapsibleElement("Done", "h2");
-
   const t_now = Date.now() / 1000;
-  for (const {assignment: assignment} of assignmentList) {
-    const t_due = assignment.duetime;
-    const dt = t_due - t_now;
-    const checked = assignment.state;
+  const sectionCourse = document.createElement("div");
 
-    if (dt > 0) {
-      if (checked === 1)
-        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
-      else
-        sectionAssigned[1].append(makeAssignmentElement(assignment, dt, checked));
-    } else {
-      if (checked === 1)
-        sectionDone[1].append(makeAssignmentElement(assignment, dt, checked));
-      else
-        sectionMissing[1].append(makeAssignmentElement(assignment, dt, checked));
+  for (const course of userData.courses) {
+    const courseElement = makeCollapsibleElement(course.title, "h2");
+    for (const assignment of course.assignments) {
+      const t_due = assignment.duetime;
+      const dt = t_due - t_now;
+      const checked = assignment.state;
+
+      courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
+      sectionCourse.append(courseElement[0]);
     }
+    sectionCourse.append(courseElement[1]);
   }
-
-  contentElement.append(sectionAssigned[0], sectionAssigned[1]);
-  contentElement.append(sectionMissing[0], sectionMissing[1]);
-  contentElement.append(sectionDone[0], sectionDone[1]);
+  contentElement.append(sectionCourse);
 }
 
 function makeCollapsibleElement(name, font) {
@@ -533,14 +541,24 @@ function makeAssignmentElement(assignment, dt, checked) {
   let dueColor = "due-upcoming";
 
   if (dt < 24 * 60 * 60) dueColor = "due-near";
-  if (dt < 0) dueColor = "due-late"
-  coloredDueText.setAttribute("class", dueColor)
+  if (dt < 0) dueColor = "due-late";
+  if (checked === 1) dueColor = "secondary-text";
 
-  assignmentElement.append(
+  coloredDueText.setAttribute("class", dueColor);
+
+  const assignmentsContent = document.createElement("div");
+  assignmentsContent.setAttribute("class", "flex-wrap");
+
+  const splitElement = makeSpanElement("•");
+  splitElement.setAttribute("class", "split");
+
+  assignmentsContent.append(
     makeSpanElement(assignment.title),
-    makeSpanElement("•"),
+    splitElement,
     coloredDueText
   );
+
+  assignmentElement.append(assignmentsContent);
 
   return assignmentElement;
 }
@@ -561,27 +579,44 @@ function collapsibleListener() {
 }
 
 function navSubjectListener() {
+  const cvCid = this.getAttribute("cv_cid");
   playClickSound();
 
-  const cv_cid = this.getAttribute("cv_cid");
-  renderAssignmentsBySubject(cv_cid);
+  navPressed(this);
+
+  tabState = cvCid;
+  renderAssignmentsBySubject(cvCid);
 }
 
 function navNavListener() {
+  const btnId = this.getAttribute("id");
   playClickSound();
 
-  switch (this.getAttribute("id")) {
+  navPressed(this);
+
+  switch (btnId) {
     case "btn-nav-today":
+      tabState = MyTab.TODAY;
       renderTodayAssignments();
       break;
     case "btn-nav-upcoming":
+      tabState = MyTab.UPCOMING;
       renderUpcomingAssignments();
       break;
     case "btn-nav-all":
     default:
-      renderAssignments();
+      tabState = MyTab.ALL;
+      renderAllAssignments();
       break;
   }
+}
+
+function navPressed(that) {
+  for (const nav of navList) {
+    nav.className = "nav-content fill-container";
+  }
+
+  that.className = "nav-content fill-container nav-active";
 }
 
 function checkboxBtnListener() {
@@ -602,32 +637,45 @@ function checkboxBtnListener() {
     currStatus = 0;
   }
 
-  // todo logic
   const item_id = this.id.slice(7);
 
-  for (const assignment of assignmentList) {
-    if (assignment.item_id === item_id) {
-      assignment.state = currStatus;
+  assignmentList.forEach((assignment) => {
+    if (assignment.assignment.item_id.toString() === item_id) {
+      assignment.assignment.state = currStatus;
     }
-  }
+  });
 
-  for (const course of userData.courses) {
-    for (const assignment of course.assignments) {
+  userData.courses.forEach((course) => {
+    course.assignments.forEach((assignment) => {
       if (assignment.item_id === item_id) {
         assignment.state = currStatus;
       }
-    }
+    });
+  });
+
+  // Update remaining elements ?
+  if (tabState === MyTab.ALL) renderAllAssignments();
+  else if (tabState === MyTab.TODAY) renderTodayAssignments();
+  else if (tabState === MyTab.UPCOMING) renderUpcomingAssignments();
+  else {
+    renderAssignmentsBySubject(tabState);
   }
 
-  console.log(assignmentList);
+  // Update numbers
+  preRenderTodayAssignments();
+
+  document.getElementById("count-all").textContent = cntAll.toString();
+  document.getElementById("count-today").textContent = cntToday.toString();
+  document.getElementById("count-upcoming").textContent = cntUpcoming.toString();
 }
 
 function loginBtnListener() {
   playClickSound();
 
   // todo: Login Authentication
+  authApp();
   // For now: just go to the main page.
-  pageState = Page.MAIN;
+  pageState = MyPage.MAIN;
   renderMainPage();
 }
 
@@ -636,7 +684,7 @@ function logoutBtnListener() {
 
   // todo: Logout Authentication
   // For now: just go to the login page.
-  pageState = Page.LOGIN;
+  pageState = MyPage.LOGIN;
   renderMainPage();
 }
 

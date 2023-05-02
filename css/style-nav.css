@@ -1,16 +1,14 @@
 #nav-bar {
-  --pad: 1.5rem;
+  --pad: 0.5rem;
   display: flex;
   flex-direction: column;
   float: left;
   overflow-y: scroll;
-  height: calc(100% - 2 * var(--pad));
-  max-height: 100%;
   padding: var(--pad);
+  height: calc(var(--vh, 1vh) * 100 - 2 * var(--pad));
   justify-content: space-between;
   background: var(--navbar-background);
   border-right: 1px solid #30363d;
-  min-width: 25%;
 }
 
 #nav-bar::-webkit-scrollbar {
@@ -20,17 +18,31 @@
 #nav-container {
   width: 100%;
   max-width: 100%;
+  padding-top: 1rem;
 }
 
 .nav-content {
   min-height: 2.5rem;
+  padding: 0 1rem;
+  width: 25vw;
   cursor: pointer;
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  align-items: center;
 }
 
-#selected {
+.nav-content:hover, .nav-content:active {
+  border-radius: 4px;
   background-color: var(--selected-background);
   z-index: -1;
+}
+
+.nav-active {
+  border-radius: 4px;
+  background-color: var(--selected-background);
+  z-index: -1;
+}
+
+#user-container {
+  padding: 1rem;
 }

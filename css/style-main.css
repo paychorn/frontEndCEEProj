@@ -8,21 +8,28 @@
   padding: 1.5rem;
 }
 
-#user-container {
-  padding: 0 0 1.5rem 1.5rem;
-}
-
 #header {
   padding: 1rem 2rem;
   background-color: var(--header-background);
   margin-right: 0;
   position: sticky;
+  display: flex;
+  justify-content: space-between;
 }
 
 .assignments {
   padding: 0.5rem 0 0.5rem 1.5rem;
   display: block;
-  overflow: hidden;
+  align-self: start;
+}
+
+.flex-wrap {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.split {
+  margin: 0 0.5rem;
 }
 
 .assignment {
@@ -83,4 +90,15 @@
 
 .due-late {
   color: sandybrown;
+}
+
+@media screen and (max-width: 900px) {
+  .split {
+    color: transparent;
+  }
+
+  .flex-wrap {
+    display: flex;
+    gap: 0;
+  }
 }

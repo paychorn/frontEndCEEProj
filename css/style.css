@@ -32,7 +32,12 @@ h1, .h1 {
 
 h2, .h2 {
   font-weight: 700;
-  font-size: 1.25rem;
+  font-size: 1.5rem;
+  line-height: 2rem;
+}
+
+button {
+  align-self: start;
 }
 
 .center {
@@ -64,10 +69,10 @@ a:visited {
   font-family: 'IBM Plex Sans Thai', sans-serif;
   font-weight: 500;
   width: 6rem;
-  height: 2rem;
+  max-height: 2rem;
   align-items: center;
   padding: 0;
-  background-color: var(--btn-background);
+  background-color: var(--navbar-background);
   color: var(--primary);
   border: 2px solid var(--primary);
   border-radius: 4px;
@@ -79,8 +84,6 @@ a:visited {
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 400;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .column {
@@ -111,4 +114,37 @@ a:visited {
   flex-direction: row;
   align-items: center;
   gap: 4px;
+}
+
+.padding-top {
+  padding-top: 4px;
+}
+
+
+@media screen and (max-width: 900px) {
+  body {
+    padding-bottom: 2rem;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  button#menu-bar {
+    display: block;
+  }
+
+  #nav-bar {
+    width: calc(var(--vw, 1vw) * 100);
+    height: calc(var(--vh, 1vh) * 100 - 2 * var(--pad));
+  }
+
+  .split {
+    color: transparent;
+  }
+
+  .flex-wrap {
+    display: flex;
+    gap: 0;
+  }
 }
