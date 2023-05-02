@@ -514,13 +514,13 @@ function renderUpcomingAssignments() {
 
   for (const course of userData.courses) {
     const a = course.assignments;
-    if (a.length!==0) { 
+    if (a.length !== 0) {
       const courseElement = makeCollapsibleElement(course.title, "h2");
       for (const assignment of course.assignments) {
         const t_due = assignment.duetime;
         const dt = t_due - t_now;
         const checked = assignment.state;
-        if (dt>0) {
+        if (dt > 0) {
           courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
           sectionCourse.append(courseElement[0]);
         }
@@ -541,7 +541,7 @@ function renderAllAssignments() {
 
   for (const course of userData.courses) {
     const a = course.assignments;
-    if (a.length!==0) { 
+    if (a.length !== 0) {
       const courseElement = makeCollapsibleElement(course.title, "h2");
       for (const assignment of course.assignments) {
         const t_due = assignment.duetime;
@@ -549,8 +549,8 @@ function renderAllAssignments() {
         const checked = assignment.state;
         courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
         sectionCourse.append(courseElement[0]);
-    }
-    sectionCourse.append(courseElement[1]);
+      }
+      sectionCourse.append(courseElement[1]);
     }
   }
   contentElement.append(sectionCourse);
