@@ -1,9 +1,8 @@
 #nav-bar {
-  --pad: 0.5rem;
+  --pad: 1.5rem;
   display: flex;
   flex-direction: column;
   float: left;
-  overflow-y: scroll;
   padding: var(--pad);
   height: calc(var(--vh, 1vh) * 100 - 2 * var(--pad));
   justify-content: space-between;
@@ -16,14 +15,18 @@
 }
 
 #nav-container {
-  width: 100%;
-  max-width: 100%;
   padding-top: 1rem;
+  overflow-y: scroll;
+}
+
+#nav-container::-webkit-scrollbar {
+  display: none;
 }
 
 .nav-content {
   min-height: 2.5rem;
-  padding: 0 1rem;
+  padding: 4px 0.5rem;
+  min-width: 25vw;
   width: 25vw;
   cursor: pointer;
   display: flex;
@@ -45,4 +48,84 @@
 
 #user-container {
   padding: 1rem;
+}
+
+@media screen and (max-width: 900px) {
+  body {
+    padding-bottom: 2rem;
+  }
+
+  h1 {
+    font-size: 1.8rem;
+  }
+
+  .h2 {
+    font-size: 1.2rem;
+  }
+
+  button#menu-bar {
+    display: block;
+  }
+
+  .split {
+    display: none;
+  }
+
+  .body {
+    padding: 0 8px 0 0;
+  }
+
+  .flex-wrap {
+    display: flex;
+    gap: 0;
+  }
+
+  #header {
+    padding: 1rem;
+  }
+
+  #nav-bar {
+    width: 80vw;
+    display: none;
+  }
+
+  #nav-container {
+    height: 80vh;
+    overflow-y: scroll;
+  }
+
+  #nav-container::-webkit-scrollbar {
+    display: none;
+  }
+
+  .nav-content {
+    padding: 0.5rem;
+    width: 78vw;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  h1 {
+    font-size: 1.2rem;
+    line-height: 2rem;
+  }
+
+  .h2 {
+    font-size: 1.2rem;
+    line-height: 1.5rem;
+    text-align: left;
+  }
+
+  #header {
+    padding: 1rem;
+    align-items: center;
+  }
+
+  #menu-icon {
+    padding: 0;
+  }
+
+  .icon-container {
+    align-items: flex-start;
+  }
 }

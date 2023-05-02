@@ -13,7 +13,6 @@
 html, body {
   overflow: hidden;
   margin: 0;
-  padding: 0;
   font-family: var(--font-default), sans-serif;
   color: var(--primary);
   background: var(--background);
@@ -25,15 +24,15 @@ html, body {
 }
 
 h1, .h1 {
-  font-size: 1.8rem;
-  line-height: 4rem;
+  font-size: 2.5rem;
+  line-height: 3rem;
   margin: 0;
 }
 
 h2, .h2 {
   font-weight: 700;
   font-size: 1.5rem;
-  line-height: 2rem;
+  line-height: 2.5rem;
 }
 
 button {
@@ -80,12 +79,15 @@ a:visited {
 }
 
 .body {
-  white-space: nowrap;
+  text-align: left;
+  word-wrap: normal;
   font-size: 1rem;
   line-height: 1.5rem;
   font-weight: 400;
 }
-
+.hidden {
+  display: none;
+}
 .column {
   display: flex;
   flex-direction: column;
@@ -118,33 +120,4 @@ a:visited {
 
 .padding-top {
   padding-top: 4px;
-}
-
-
-@media screen and (max-width: 900px) {
-  body {
-    padding-bottom: 2rem;
-  }
-
-  h1 {
-    font-size: 1.5rem;
-  }
-
-  button#menu-bar {
-    display: block;
-  }
-
-  #nav-bar {
-    width: calc(var(--vw, 1vw) * 100);
-    height: calc(var(--vh, 1vh) * 100 - 2 * var(--pad));
-  }
-
-  .split {
-    color: transparent;
-  }
-
-  .flex-wrap {
-    display: flex;
-    gap: 0;
-  }
 }

@@ -152,6 +152,7 @@ const postUserTodo = async function (item_id, state) {
     .catch((error) => console.error(error));
 };
 
+
 async function main() {
   const urlParams = new URLSearchParams(window.location.search);
   isLogin = urlParams.get("status") === "ok";
@@ -185,7 +186,6 @@ async function main() {
 
     document.title = `${appName} App`
     renderMainPage();
-    // .then(renderTodayAssignments);
   }
 }
 
@@ -255,25 +255,25 @@ function renderMainPage() {
       <div class="nav-content fill-container" id="btn-nav-all">
         <div class="icon-container">
           <img src="/assets/icon-all.svg" alt="Today Icon">
-          <span class="body" style="padding-top: 4px;">All</span>
+          <span class="body" class="padding-top">All</span>
         </div>
-        <span id="count-all" class="body" style="padding-top: 4px;">4</span>
+        <span id="count-all" class="body" class="padding-top">4</span>
       </div>
       
       <div class="nav-content fill-container" id="btn-nav-today">
         <div class="icon-container">
           <img src="/assets/icon-today.svg" alt="Today Icon">
-          <span class="body" style="padding-top: 4px;">Today</span>
+          <span class="body" class="padding-top">Today</span>
         </div>
-        <span id="count-today" class="body" style="padding-top: 4px;">4</span>
+        <span id="count-today" class="body" class="padding-top">4</span>
       </div>
       
       <div class="nav-content fill-container" id="btn-nav-upcoming">
         <div class="icon-container">
           <img src="/assets/icon-upcoming.svg" alt="Upcoming Icon">
-          <span class="body" style="padding-top: 4px;">Upcoming</span>
+          <span class="body" class="padding-top">Upcoming</span>
         </div>
-        <span id="count-upcoming" class="body secondary-text" style="padding-top: 4px;">4</span>
+        <span id="count-upcoming" class="body secondary-text" class="padding-top">4</span>
       </div>
       
       <br/>
@@ -288,6 +288,7 @@ function renderMainPage() {
       mainContainer.id = "main";
       mainContainer.innerHTML = `
       <span id="header">
+        <img id="menu-icon" onclick="menuBarListener()" src="/assets/icon-menubar.svg">
         <h1 id="header-text">All</h1>
       </span>
       <div class="content" id="main-content"></div>
@@ -477,13 +478,12 @@ function preRenderTodayAssignments() {
       if (0 < dt && dt < 24 * 60 * 60) {
         assignmentForToday = true;
         courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
-        sectionCourse.append(courseElement[0]);
         if (checked === 0) ++cntToday;
       } else if (0 < dt) {
         if (checked === 0) ++cntUpcoming;
       }
     }
-    sectionCourse.append(courseElement[1]);
+    sectionCourse.append(courseElement[0], courseElement[1]);
   }
 
 
@@ -513,18 +513,20 @@ function renderUpcomingAssignments() {
   const sectionCourse = document.createElement("div");
 
   for (const course of userData.courses) {
-    const courseElement = makeCollapsibleElement(course.title, "h2");
-    for (const assignment of course.assignments) {
-      const t_due = assignment.duetime;
-      const dt = t_due - t_now;
-      const checked = assignment.state;
-
-      if (0 < dt) {
-        courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
-        sectionCourse.append(courseElement[0]);
+    const a = course.assignments;
+    if (a.length!==0) { 
+      const courseElement = makeCollapsibleElement(course.title, "h2");
+      for (const assignment of course.assignments) {
+        const t_due = assignment.duetime;
+        const dt = t_due - t_now;
+        const checked = assignment.state;
+        if (dt>0) {
+          courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
+          sectionCourse.append(courseElement[0]);
+        }
       }
+      sectionCourse.append(courseElement[1]);
     }
-    sectionCourse.append(courseElement[1]);
   }
   contentElement.append(sectionCourse);
 }
@@ -538,16 +540,18 @@ function renderAllAssignments() {
   const sectionCourse = document.createElement("div");
 
   for (const course of userData.courses) {
-    const courseElement = makeCollapsibleElement(course.title, "h2");
-    for (const assignment of course.assignments) {
-      const t_due = assignment.duetime;
-      const dt = t_due - t_now;
-      const checked = assignment.state;
-
-      courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
-      sectionCourse.append(courseElement[0]);
+    const a = course.assignments;
+    if (a.length!==0) { 
+      const courseElement = makeCollapsibleElement(course.title, "h2");
+      for (const assignment of course.assignments) {
+        const t_due = assignment.duetime;
+        const dt = t_due - t_now;
+        const checked = assignment.state;
+        courseElement[1].append(makeAssignmentElement(assignment, dt, checked));
+        sectionCourse.append(courseElement[0]);
     }
     sectionCourse.append(courseElement[1]);
+    }
   }
   contentElement.append(sectionCourse);
 }
@@ -645,6 +649,15 @@ function navSubjectListener() {
 
   tabState = cvCid;
   renderAssignmentsBySubject(cvCid);
+}
+
+function menuBarListener() {
+  const menuBar = document.getElementById("nav-bar");
+  if (menuBar.style.display !== "block") {
+    menuBar.style.display = "block";
+  } else {
+    menuBar.style.display = "none";
+  }
 }
 
 function navNavListener() {
@@ -770,7 +783,7 @@ function makeDueText(dt) {
   if (dt > 0) {
     return `Due in ${secondsToHoursMinutes(dt)}`
   } else {
-    return `Past due for ${secondsToHoursMinutes(-dt)}`
+    return ` Past due for ${secondsToHoursMinutes(-dt)}`
   }
 }
 
