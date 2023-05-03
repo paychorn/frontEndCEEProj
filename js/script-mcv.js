@@ -164,6 +164,7 @@ async function main() {
   } else {
     console.log("Logged in!");
     pageState = MyPage.MAIN;
+    renderMainPage();
 
     const newInfo = await getUserTodo();
     console.log(newInfo);
@@ -184,7 +185,7 @@ async function main() {
 
     assignmentList.sort((a, b) => a.assignment.title.localeCompare(b.assignment.title));
 
-    document.title = `${appName} App`
+    document.title = `${appName} - All`
     renderMainPage();
   }
 }
@@ -533,6 +534,8 @@ function renderUpcomingAssignments() {
 }
 
 function renderAllAssignments() {
+  document.getElementById("header-text").textContent = `${appName} - All`;
+  
   const contentElement = document.getElementById("main-content");
   contentElement.innerHTML = "";
   contentElement.className = "content";
