@@ -611,7 +611,7 @@ function makeAssignmentElement(assignment, dt, checked) {
   if (dt < 0) dueColor = "due-late";
   if (checked === 1) dueColor = "secondary-text";
 
-  coloredDueText.setAttribute("class", dueColor);
+  coloredDueText.classList.add(dueColor);
 
   const assignmentsContent = document.createElement("div");
   assignmentsContent.setAttribute("class", "flex-wrap");
